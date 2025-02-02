@@ -50,21 +50,23 @@ class GuestController extends Controller
      */
     public function store(Request $request) {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|min:3|max:10',   
+            'name' => 'required|min:3',   
+            //'email' => 'required|email|unique:guest',            
         ]);
 
         if($validator->passes()){
-            $guest = new Guest();
-            $guest->name = $request->name;
-            $guest->surname_id = $request->surname_id;
-            $guest->city_id = $request->city_id;
-            $guest->category_id = $request->category_id;
-            $guest->event = $request->event;
-            $guest->invitation = $request->invitation;
-            $guest->food_choice = $request->food_choice;
-            $guest->guest_type = $request->guest_type;
-            
-            $guest->save();
+            $guests = new Guest();
+            $guests->name = $request->name;
+            //$guests->email = $request->email;
+            $guests->surname_id = $request->surname_id;
+            $guests->city_id = $request->city_id;
+            $guests->category_id = $request->category_id;
+            $guests->event = $request->event;
+            $guests->invitation = $request->invitation;
+            $guests->food_choice = $request->food_choice;
+            $guests->guest_type = $request->guest_type;
+            //$guests->address = $request->address;
+            $guests->save();
 
             return response()->json([
                 'status' => true,
