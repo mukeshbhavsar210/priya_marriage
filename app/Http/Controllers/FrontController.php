@@ -16,7 +16,7 @@ class FrontController extends Controller
 
         //dd($cities);
 
-        return view("city", [
+        return view("admin.city", [
             "cities" => $cities
         ]);
     }

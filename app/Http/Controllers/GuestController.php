@@ -11,6 +11,21 @@ use Illuminate\Support\Facades\Validator;
 
 class GuestController extends Controller
 {
+
+    public function viewHome () {
+        $guests = Guest::with('surname')->with('city')->with('category')->get();
+        $surnames = Surname::get();
+        $cities = City::get();
+        $categories = Category::get();
+
+        $data['guests'] = $guests;
+        $data['surnames'] = $surnames;
+        $data['cities'] = $cities;
+        $data['categories'] = $categories;
+        
+        return view("front.index", $data);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -19,13 +34,13 @@ class GuestController extends Controller
         $surnames = Surname::get();
         $cities = City::get();
         $categories = Category::get();
+
+        $data['guests'] = $guests;
+        $data['surnames'] = $surnames;
+        $data['cities'] = $cities;
+        $data['categories'] = $categories;
         
-        return view("guest.list", [
-            "guests"=> $guests,
-            "surnames"=> $surnames,
-            "cities"=> $cities,
-            "categories"=> $categories
-        ]);
+        return view("admin.guest.list", $data);
     }
 
     /**
@@ -37,7 +52,7 @@ class GuestController extends Controller
         $cities = City::get();
         $categories = Category::get();
 
-        return view("guest.create", [
+        return view("admin.guest.create", [
             "guests"=> $guests,
             "surnames"=> $surnames,
             "cities"=> $cities,
@@ -86,33 +101,65 @@ class GuestController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit($id, Request $request){
-        $guests = Guest::with('surname')->with('city')->with('category')->get();
-        $surnames = Surname::get();
+        $guest = Guest::find($id);
+        $surname = Surname::get();
         $cities = City::get();
         $categories = Category::get();
 
-        return view('guest.edit',
-        [
-            "guests"=> $guests,
-            "surnames"=> $surnames,
-            "cities"=> $cities,
-            "categories"=> $categories
-        ]);
+        $data['guest'] = $guest;
+        $data['surname'] = $surname;
+        $data['cities'] = $cities;
+        $data['categories'] = $categories;
+
+        return view('guest.edit', $data);
     }
+
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        //
+    public function update($id, Request $request){
+        $guest = Guest::find($id);
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|min:3',          
+        ]);
+
+        if($validator->passes()){
+            $guest->name = $request->name;
+            $guest->surname_id = $request->surname_id;
+            $guest->city_id = $request->city_id;
+            $guest->category_id = $request->category_id;
+            $guest->event = $request->event;
+            $guest->invitation = $request->invitation;
+            $guest->food_choice = $request->food_choice;
+            $guest->guest_type = $request->guest_type;
+            $guest->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Guest updated successfully',
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-        //
+    public function destroy($id, Request $request){
+        $guest = Guest::find($id);
+        $guest->delete();
+
+        $request->session()->flash('success', 'Guest deleted successfully');
+
+        return response([
+            'status' => true,
+            'message' => 'Guest deleted successfully',
+        ]);
     }
 }
