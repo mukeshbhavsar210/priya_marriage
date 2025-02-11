@@ -72,6 +72,11 @@ class GuestController extends Controller
             'name' => 'required|min:3',              
         ]);
 
+        $imageName = time().'.'.$request->image->extension();
+
+        // Public Folder store
+        $request->image->storeAs('photos', $imageName);
+
         if($validator->passes()){
             $guests = new Guest();
             $guests->name = $request->name;
@@ -84,25 +89,13 @@ class GuestController extends Controller
             $guests->guest_type = $request->guest_type;
             $guests->save();
 
-             // Save image here
-             if (!empty($request->image_id)) {
-                $tempImage = TempImage::find($request->image_id);
-                $extArray = explode('.',$tempImage->name);
-                $ext = last($extArray);
-
-                $newImageName = $guests->id.'_'.$guests->name.'.'.$ext;                
-                $sPath = public_path().'/temp/'.$tempImage->name;
-                $dPath = public_path().'/uploads/photos/'.$newImageName;                
-                File::copy($sPath,$dPath);
-
-                //Generate thumbnail
-                $dPath = public_path().'/uploads/photos/'.$newImageName;
-                $manager = new ImageManager(new Driver());
-                $image = $manager->read($sPath);
-                $image->cover(300,300);
-                $image->save($dPath);
-                $image->save($dPath);                                  
-                $guests->image = $newImageName;
+            //basic Upload image
+            if($request->hasfile('image')) {
+                $file = $request->file('image');
+                $extenstion = $file->getClientOriginalExtension();
+                $filename = time().'.'.$extenstion;
+                $file->move('photos/', $filename);
+                $guests->image = $filename;
                 $guests->save();
             }
 

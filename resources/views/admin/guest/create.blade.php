@@ -19,8 +19,8 @@
     <div class="container-fluid">
         <div class="card">
             @include('admin.layouts.message')
-            <form action="" method="post" id="createGuestForm" name="createGuestForm">
-            {{-- <form method="post" action="create-guest"> --}}
+            {{-- <form action="" method="post" id="createGuestForm" name="createGuestForm"> --}}
+            <form method="post" action="create-guest" enctype="multipart/form-data" >
                 @csrf
                     <div class="card-body">
                         <div class="row">
@@ -116,13 +116,8 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="mb-3">
-                                    <input type="hidden" id="image_id" name="image_id" value=" ">
                                     <label for="image">Photo</label>
-                                    <div id="image" class="dropzone dz-clickable">
-                                        <div class="dz-message needsclick">
-                                            <br>Drop files here or click to upload.<br><br>
-                                        </div>
-                                    </div>
+                                    <input type="file" id="image" name="image" value=" ">                                    
                                 </div>
                         </div>
                     </div>
@@ -171,28 +166,5 @@
             }
         })
     });
-
-    //Dropzone for images
-    Dropzone.autoDiscover = false;
-            const dropzone = $("#image").dropzone({
-                init: function() {
-                    this.on('addedfile', function(file) {
-                        if (this.files.length > 1) {
-                            this.removeFile(this.files[0]);
-                        }
-                    });
-                },
-                url:  "{{ route('temp-images.create') }}",
-                maxFiles: 1,
-                paramName: 'image',
-                addRemoveLinks: true,
-                acceptedFiles: "image/jpeg,image/png,image/gif",
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }, success: function(file, response){
-                    $("#image_id").val(response.image_id);
-                    console.log(response)
-                }
-            });
 </script>
 @endsection

@@ -22,6 +22,7 @@
                         <th scope="col">Invitation</th>                        
                         <th scope="col">Food</th>
                         <th scope="col">Bridge</th>
+                        <th scope="col">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -30,12 +31,12 @@
                                 <tr>
                                     <td>
                                         @if($guest->image > 0)
-                                            <img style="height: 50px; border-radius:100px;" src="{{ $guest->image }}" />    
+                                            <img style="height: 50px" src="{{ asset('photos/'.$guest->image ) }}" />
                                         @else
-                                            <img style="height: 50px" src="{{ asset('front-assets/images/user.png') }}" />
-                                        @endif
+                                            <img style="width: 50px" src="{{ asset('front-assets/images/user.png') }}" />
+                                        @endif                                    
                                     </td>
-                                    <td>{{ $guest->name }}</td>
+                                    <td>{{ $guest->name }} </td>
                                     <td>{{ $guest->surname->surname }}</td>
                                     <td>{{ $guest->mobile }}</td>
                                     <td>{{ $guest->address }}</td>
@@ -54,6 +55,10 @@
                                                 {{ $guest->guest_type }}
                                             </div>
                                         @endif
+                                    </td>
+                                    <td>
+                                        <a href="#" class="btn btn-primary">Edit</a>
+                                        <a href="#" class="btn btn-danger">Delete</a>
                                     </td>
                                 </tr>
                             @endforeach    

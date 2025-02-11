@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Guest extends Model
 {
     public function photo(){
-        return $this->belongsTo(Guest_Image::class, 'guest_id');
+        return $this->belongsTo(GuestImage::class, 'guest_id');
     }
 
     public function surname(){
