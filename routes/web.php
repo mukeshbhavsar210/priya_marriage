@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\admin\TempImagesController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FrontController;
@@ -29,10 +30,13 @@ Route::middleware('auth')->group(function () {
     //Guest routes
     Route::get('admin/guest-list',[GuestController::class,'index'])->name('guest.index');
     Route::get('admin/create-guest',[GuestController::class,'create'])->name('guest.create');
-    Route::post('admin/store-guest',[GuestController::class,'store'])->name('guest.store');
+    Route::post('admin/create-guest',[GuestController::class,'store'])->name('guest.store');
     Route::get('admin/edit/{guest}',[GuestController::class,'edit'])->name('guest.edit');
     Route::put('admin/edit/{guest}',[GuestController::class,'update'])->name('guest.update');
     Route::delete('admin/delete/{id}',[GuestController::class,'destroy'])->name('guest.delete');
+
+    //Temp image controller
+    Route::post('/upload-temp-image', [TempImagesController::class, 'create'])->name('temp-images.create');
 
     //Route::delete('/brands/{brand}', [BrandController::class, 'destroy'])->name('brands.delete');
 

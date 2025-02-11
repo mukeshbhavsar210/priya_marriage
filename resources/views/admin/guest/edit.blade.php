@@ -2,22 +2,25 @@
 
 @section('content')
 
-<div class="row">
-    <div class="col-md-8">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Edit Guest') }}
-        </h2>
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8">
+            <h2>Edit Guest</h2>
+        </div>
+        <div class="col-md-4 text-right">
+            <a href="{{ route('guest.index') }}" class="btn btn-primary float-end">Back</a>
+        </div>
     </div>
-    <div class="col-md-4">
-        <a href="{{ route('guest.index') }}" class="btn btn-primary float-end">Back</a>
-    </div>
-</div>
+  </div>
+</section>
 
 
+<section class="content">
+  <div class="container-fluid">
 @include('admin.layouts.message')
 
-<div class="card mt-4">
-    <div class="card-header">Edit guest</div>
+<div class="card">
     <form action="edit-guest" method="post" >
         <div class="card-body">        
             @csrf
@@ -115,5 +118,7 @@
     <div class="card-footer"><button type="submit" class="btn btn-primary">Submit</button></div>
   </form>
 </div>
+</div>
+</section>
 
 @endsection
