@@ -7,13 +7,17 @@ use App\Models\Category;
 use App\Models\City;
 use App\Models\Guest;
 use App\Models\Surname;
+use App\Models\TempImage;
+use Illuminate\Support\Facades\File;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 use Illuminate\Support\Facades\Validator;
 
 class GuestController extends Controller
 {
 
     public function viewHome () {
-        $guests = Guest::with('surname')->with('city')->with('category')->get();
+        $guests = Guest::with('photo')->with('surname')->with('city')->with('category')->get();
         $surnames = Surname::get();
         $cities = City::get();
         $categories = Category::get();
@@ -21,7 +25,7 @@ class GuestController extends Controller
         $data['guests'] = $guests;
         $data['surnames'] = $surnames;
         $data['cities'] = $cities;
-        $data['categories'] = $categories;
+        $data['categories'] = $categories;                  
         
         return view("front.index", $data);
     }
@@ -65,14 +69,12 @@ class GuestController extends Controller
      */
     public function store(Request $request) {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|min:3',   
-            //'email' => 'required|email|unique:guest',            
+            'name' => 'required|min:3',              
         ]);
 
         if($validator->passes()){
             $guests = new Guest();
             $guests->name = $request->name;
-            //$guests->email = $request->email;
             $guests->surname_id = $request->surname_id;
             $guests->city_id = $request->city_id;
             $guests->category_id = $request->category_id;
@@ -80,8 +82,29 @@ class GuestController extends Controller
             $guests->invitation = $request->invitation;
             $guests->food_choice = $request->food_choice;
             $guests->guest_type = $request->guest_type;
-            //$guests->address = $request->address;
             $guests->save();
+
+             // Save image here
+             if (!empty($request->image_id)) {
+                $tempImage = TempImage::find($request->image_id);
+                $extArray = explode('.',$tempImage->name);
+                $ext = last($extArray);
+
+                $newImageName = $guests->id.'_'.$guests->name.'.'.$ext;                
+                $sPath = public_path().'/temp/'.$tempImage->name;
+                $dPath = public_path().'/uploads/photos/'.$newImageName;                
+                File::copy($sPath,$dPath);
+
+                //Generate thumbnail
+                $dPath = public_path().'/uploads/photos/'.$newImageName;
+                $manager = new ImageManager(new Driver());
+                $image = $manager->read($sPath);
+                $image->cover(300,300);
+                $image->save($dPath);
+                $image->save($dPath);                                  
+                $guests->image = $newImageName;
+                $guests->save();
+            }
 
             return response()->json([
                 'status' => true,
@@ -111,7 +134,7 @@ class GuestController extends Controller
         $data['cities'] = $cities;
         $data['categories'] = $categories;
 
-        return view('guest.edit', $data);
+        return view('admin.guest.edit', $data);
     }
 
 
